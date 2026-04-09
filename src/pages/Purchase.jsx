@@ -237,7 +237,7 @@ export default function Purchase() {
     setPaymentError(null)
     try {
       await api('PATCH', `/api/orders/${currentOrder.id}`, { paymentMethod: 'pix' })
-      const res = await api('POST', '/api/mercadopago/create-pix', { orderId: currentOrder.id })
+      const res = await api('POST', '/api/mercadopago/create-pix', { orderId: currentOrder.id, amount: currentOrder.amount, email: customerEmail })
       const data = await res.json()
       if (data.success) {
         setPixData(data.pixData)

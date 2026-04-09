@@ -49,20 +49,19 @@ router.post('/mercadopago/process-order', async (req, res) => {
   }
 })
 
-// Generate PIX
+// Generate PIX — receives amount and email directly from frontend
 router.post('/mercadopago/create-pix', async (req, res) => {
   try {
-    const { orderId } = req.body
-    const order = db.getOrder(orderId)
-    if (!order) return res.status(404).json({ success: false, message: 'Pedido não encontrado' })
+    const { orderId, amount, email } = req.body
+    if (!orderId || !amount) return res.status(400).json({ success: false, message: 'orderId and amount required' })
 
     const mpRes = await fetch(`${MP_API}/payments`, {
       method: 'POST',
       headers: mpHeaders(),
       body: JSON.stringify({
-        transaction_amount: order.amount / 100,
+        transaction_amount: amount / 100,
         payment_method_id: 'pix',
-        payer: { email: order.customer_email || `cliente_${orderId}@recadomagico.com.br` },
+        payer: { email: email || `cliente_${orderId}@recadomagico.com.br` },
         metadata: { order_id: String(orderId) },
         statement_descriptor: 'RECADOMAGICO',
       }),

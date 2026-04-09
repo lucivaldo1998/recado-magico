@@ -3,7 +3,9 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const DB_PATH = path.join(__dirname, '..', 'data.json')
+// Use persistent volume in production (Railway mounts at /app/data)
+const DB_DIR = process.env.NODE_ENV === 'production' && fs.existsSync('/app/data') ? '/app/data' : path.join(__dirname, '..')
+const DB_PATH = path.join(DB_DIR, 'data.json')
 
 let data
 

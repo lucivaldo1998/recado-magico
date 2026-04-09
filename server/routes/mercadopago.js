@@ -8,12 +8,6 @@ function getMpClient() {
   return new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN })
 }
 
-// Debug endpoint
-router.get('/debug-orders', (req, res) => {
-  const orders = db.getOrders()
-  res.json({ count: orders.length, orders: orders.map(o => ({ id: o.id, type: typeof o.id, name: o.child_name })) })
-})
-
 // Process credit card payment
 router.post('/mercadopago/process-order', async (req, res) => {
   try {
@@ -55,9 +49,7 @@ router.post('/mercadopago/process-order', async (req, res) => {
 router.post('/mercadopago/create-pix', async (req, res) => {
   try {
     const { orderId } = req.body
-    console.log('PIX request - orderId:', orderId, 'type:', typeof orderId)
     const order = db.getOrder(orderId)
-    console.log('PIX order found:', !!order, order ? order.id : 'null')
     if (!order) return res.status(404).json({ success: false, message: 'Pedido não encontrado' })
 
     const client = getMpClient()

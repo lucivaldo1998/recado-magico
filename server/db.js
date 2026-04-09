@@ -10,7 +10,6 @@ const DB_PATH = path.join(DB_DIR, 'data.json')
 let data
 
 function load() {
-  if (data) return data
   if (fs.existsSync(DB_PATH)) {
     data = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
   } else {
@@ -106,29 +105,32 @@ const db = {
     }
   },
 
-  // Direct data access methods used by routes
-  getSettings() { return data.settings },
-  getSetting(key) { return data.settings[key] },
-  setSetting(key, value) { data.settings[key] = value; save() },
+  // Direct data access — always fresh from disk
+  getSettings() { load(); return data.settings },
+  getSetting(key) { load(); return data.settings[key] },
+  setSetting(key, value) { load(); data.settings[key] = value; save() },
 
-  getPackages() { return data.packages.filter(p => p.active).sort((a, b) => a.sort_order - b.sort_order).map(p => ({ ...p, features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features })) },
-  getPackage(id) { return data.packages.find(p => p.id === Number(id)) },
+  getPackages() { load(); return data.packages.filter(p => p.active).sort((a, b) => a.sort_order - b.sort_order).map(p => ({ ...p, features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features })) },
+  getPackage(id) { load(); return data.packages.find(p => p.id === Number(id)) },
 
-  getCharacters() { return data.characters.filter(c => c.active).sort((a, b) => a.sort_order - b.sort_order) },
+  getCharacters() { load(); return data.characters.filter(c => c.active).sort((a, b) => a.sort_order - b.sort_order) },
 
   createOrder(order) {
+    load()
     const id = data._nextId.orders++
     const newOrder = { id, ...order, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
     data.orders.push(newOrder)
     save()
     return { lastInsertRowid: id }
   },
-  getOrder(id) { return data.orders.find(o => o.id === Number(id)) },
+  getOrder(id) { load(); return data.orders.find(o => o.id === Number(id)) },
   updateOrder(id, updates) {
+    load()
     const order = data.orders.find(o => o.id === Number(id))
     if (order) { Object.assign(order, updates, { updated_at: new Date().toISOString() }); save() }
   },
   getOrders(filters = {}) {
+    load()
     let orders = [...data.orders]
     if (filters.status && filters.status !== 'all') orders = orders.filter(o => o.status === filters.status)
     if (filters.search) {
@@ -138,13 +140,13 @@ const db = {
     return orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   },
   getStats() {
-    const orders = data.orders
+    load()
     return {
-      total: orders.length,
-      pending: orders.filter(o => o.status === 'pending').length,
-      paid: orders.filter(o => o.status === 'paid').length,
-      completed: orders.filter(o => o.status === 'completed').length,
-      revenue: orders.filter(o => ['paid', 'completed'].includes(o.status)).reduce((s, o) => s + (o.amount || 0), 0),
+      total: data.orders.length,
+      pending: data.orders.filter(o => o.status === 'pending').length,
+      paid: data.orders.filter(o => o.status === 'paid').length,
+      completed: data.orders.filter(o => o.status === 'completed').length,
+      revenue: data.orders.filter(o => ['paid', 'completed'].includes(o.status)).reduce((s, o) => s + (o.amount || 0), 0),
     }
   },
 }

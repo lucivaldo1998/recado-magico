@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: recado-magico
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx vite build && cp -r public/characters dist/ && cp -r public/videos dist/
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MP_ACCESS_TOKEN
+        sync: false
+      - key: MP_PUBLIC_KEY
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false

@@ -1,0 +1,45 @@
+{
+  "name": "recado-magico",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "node --watch server/index.js",
+    "build": "vite build && cp -r public/characters dist/",
+    "start": "node server/index.js",
+    "db:seed": "node server/seed.js"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "framer-motion": "^12.38.0",
+    "helmet": "^8.0.0",
+    "mercadopago": "^2.0.15",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "clsx": "^2.1.1",
+    "concurrently": "^9.1.2",
+    "lucide-react": "^0.468.0",
+    "postcss": "^8.4.49",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.0",
+    "wouter": "^3.5.0",
+    "zustand": "^5.0.0"
+  }
+}

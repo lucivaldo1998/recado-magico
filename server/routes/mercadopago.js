@@ -1,31 +1,27 @@
 import { Router } from 'express'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
 import db from '../db.js'
 
 const router = Router()
 
-function getMpClient() {
-  return new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN })
-}
+const MP_API = 'https://api.mercadopago.com/v1'
 
-// Test: verify db works from this module
-router.get('/test-db/:id', (req, res) => {
-  const order = db.getOrder(req.params.id)
-  const hasGetOrder = typeof db.getOrder === 'function'
-  const hasPrepare = typeof db.prepare === 'function'
-  res.json({ found: !!order, id: req.params.id, hasGetOrder, hasPrepare, orderData: order || null })
-})
+function mpHeaders() {
+  return {
+    'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+    'Content-Type': 'application/json',
+    'X-Idempotency-Key': crypto.randomUUID(),
+  }
+}
 
 // Process credit card payment
 router.post('/mercadopago/process-order', async (req, res) => {
   try {
     const { token, installments, paymentMethodId, amount, email, orderId, issuerId } = req.body
 
-    const client = getMpClient()
-    const payment = new Payment(client)
-
-    const result = await payment.create({
-      body: {
+    const mpRes = await fetch(`${MP_API}/payments`, {
+      method: 'POST',
+      headers: mpHeaders(),
+      body: JSON.stringify({
         transaction_amount: amount / 100,
         token,
         installments: installments || 1,
@@ -34,9 +30,9 @@ router.post('/mercadopago/process-order', async (req, res) => {
         payer: { email },
         metadata: { order_id: String(orderId) },
         statement_descriptor: 'RECADOMAGICO',
-      },
-      requestOptions: { idempotencyKey: crypto.randomUUID() },
+      }),
     })
+    const result = await mpRes.json()
 
     if (result.status === 'approved') {
       db.updateOrder(orderId, { status: 'paid', payment_method: 'credit_card', payment_id: String(result.id) })
@@ -60,19 +56,22 @@ router.post('/mercadopago/create-pix', async (req, res) => {
     const order = db.getOrder(orderId)
     if (!order) return res.status(404).json({ success: false, message: 'Pedido não encontrado' })
 
-    const client = getMpClient()
-    const payment = new Payment(client)
-
-    const result = await payment.create({
-      body: {
+    const mpRes = await fetch(`${MP_API}/payments`, {
+      method: 'POST',
+      headers: mpHeaders(),
+      body: JSON.stringify({
         transaction_amount: order.amount / 100,
         payment_method_id: 'pix',
         payer: { email: order.customer_email || `cliente_${orderId}@recadomagico.com.br` },
         metadata: { order_id: String(orderId) },
         statement_descriptor: 'RECADOMAGICO',
-      },
-      requestOptions: { idempotencyKey: crypto.randomUUID() },
+      }),
     })
+    const result = await mpRes.json()
+
+    if (result.error) {
+      return res.status(400).json({ success: false, message: result.message || result.error })
+    }
 
     const pixData = {
       qrCodeText: result.point_of_interaction?.transaction_data?.qr_code,
@@ -94,10 +93,8 @@ router.post('/mercadopago/webhook', async (req, res) => {
   try {
     const { type, data } = req.body
     if (type === 'payment' && data?.id) {
-      const client = getMpClient()
-      const payment = new Payment(client)
-      const result = await payment.get({ id: data.id })
-
+      const mpRes = await fetch(`${MP_API}/payments/${data.id}`, { headers: mpHeaders() })
+      const result = await mpRes.json()
       if (result.status === 'approved' && result.metadata?.order_id) {
         db.updateOrder(result.metadata.order_id, { status: 'paid' })
       }

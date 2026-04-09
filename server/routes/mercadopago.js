@@ -8,6 +8,14 @@ function getMpClient() {
   return new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN })
 }
 
+// Test: verify db works from this module
+router.get('/test-db/:id', (req, res) => {
+  const order = db.getOrder(req.params.id)
+  const hasGetOrder = typeof db.getOrder === 'function'
+  const hasPrepare = typeof db.prepare === 'function'
+  res.json({ found: !!order, id: req.params.id, hasGetOrder, hasPrepare, orderData: order || null })
+})
+
 // Process credit card payment
 router.post('/mercadopago/process-order', async (req, res) => {
   try {

@@ -18,7 +18,7 @@ router.post('/mercadopago/process-order', async (req, res) => {
 
     const result = await payment.create({
       body: {
-        transaction_amount: amount / 100, // centavos → reais
+        transaction_amount: amount / 100,
         token,
         installments: installments || 1,
         payment_method_id: paymentMethodId,
@@ -31,8 +31,7 @@ router.post('/mercadopago/process-order', async (req, res) => {
     })
 
     if (result.status === 'approved') {
-      db.prepare("UPDATE orders SET status = 'paid', payment_method = 'credit_card', payment_id = ?, updated_at = datetime('now') WHERE id = ?")
-        .run(String(result.id), orderId)
+      db.updateOrder(orderId, { status: 'paid', payment_method: 'credit_card', payment_id: String(result.id) })
     }
 
     res.json({
@@ -50,7 +49,7 @@ router.post('/mercadopago/process-order', async (req, res) => {
 router.post('/mercadopago/create-pix', async (req, res) => {
   try {
     const { orderId } = req.body
-    const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId)
+    const order = db.getOrder(orderId)
     if (!order) return res.status(404).json({ success: false, message: 'Pedido não encontrado' })
 
     const client = getMpClient()
@@ -60,7 +59,7 @@ router.post('/mercadopago/create-pix', async (req, res) => {
       body: {
         transaction_amount: order.amount / 100,
         payment_method_id: 'pix',
-        payer: { email: `cliente_${orderId}@recadomagico.com.br` },
+        payer: { email: order.customer_email || `cliente_${orderId}@recadomagico.com.br` },
         metadata: { order_id: String(orderId) },
         statement_descriptor: 'RECADOMAGICO',
       },
@@ -73,8 +72,7 @@ router.post('/mercadopago/create-pix', async (req, res) => {
       expiresAt: result.date_of_expiration,
     }
 
-    db.prepare("UPDATE orders SET payment_method = 'pix', payment_id = ?, updated_at = datetime('now') WHERE id = ?")
-      .run(String(result.id), orderId)
+    db.updateOrder(orderId, { payment_method: 'pix', payment_id: String(result.id) })
 
     res.json({ success: true, pixData })
   } catch (err) {
@@ -93,8 +91,7 @@ router.post('/mercadopago/webhook', async (req, res) => {
       const result = await payment.get({ id: data.id })
 
       if (result.status === 'approved' && result.metadata?.order_id) {
-        db.prepare("UPDATE orders SET status = 'paid', updated_at = datetime('now') WHERE id = ?")
-          .run(result.metadata.order_id)
+        db.updateOrder(result.metadata.order_id, { status: 'paid' })
       }
     }
     res.status(200).send('OK')

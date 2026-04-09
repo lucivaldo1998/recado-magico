@@ -60,7 +60,7 @@ export default function Purchase() {
 
   // Checkout inline state
   const [showCheckout, setShowCheckout] = useState(false)
-  const [paymentTab, setPaymentTab] = useState('card')
+  const [paymentTab, setPaymentTab] = useState('pix')
   const [mpReady, setMpReady] = useState(false)
   const [pixData, setPixData] = useState(null)
   const [pixLoading, setPixLoading] = useState(false)
@@ -643,16 +643,8 @@ export default function Purchase() {
             </div>
           </div>
 
-          {/* Payment tabs */}
+          {/* Payment tabs — PIX first */}
           <div className="flex border-2 border-gray-200 rounded-xl overflow-hidden mb-6">
-            <button
-              onClick={() => setPaymentTab('card')}
-              className={`flex-1 py-3.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
-                paymentTab === 'card' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <CreditCard className="w-4 h-4" /> Cartão de Crédito
-            </button>
             <button
               onClick={() => setPaymentTab('pix')}
               className={`flex-1 py-3.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
@@ -660,6 +652,14 @@ export default function Purchase() {
               }`}
             >
               <QrCode className="w-4 h-4" /> PIX
+            </button>
+            <button
+              onClick={() => setPaymentTab('card')}
+              className={`flex-1 py-3.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
+                paymentTab === 'card' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <CreditCard className="w-4 h-4" /> Cartão de Crédito
             </button>
           </div>
 

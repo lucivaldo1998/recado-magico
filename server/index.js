@@ -8,14 +8,7 @@ import { fileURLToPath } from 'url'
 import settingsRoutes from './routes/settings.js'
 import ordersRoutes from './routes/orders.js'
 import adminRoutes from './routes/admin.js'
-
-let mercadopagoRoutes
-try {
-  mercadopagoRoutes = (await import('./routes/mercadopago.js')).default
-  console.log('Mercado Pago SDK loaded OK')
-} catch (err) {
-  console.error('Mercado Pago SDK failed:', err.message)
-}
+import mercadopagoRoutes from './routes/mercadopago.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -26,24 +19,19 @@ app.use(cors())
 app.use(compression())
 app.use(express.json())
 
-// ALL API routes registered FIRST
+// ALL API routes
 app.use('/api', settingsRoutes)
 app.use('/api', ordersRoutes)
 app.use('/api', adminRoutes)
-if (mercadopagoRoutes) {
-  app.use('/api', mercadopagoRoutes)
-} else {
-  app.post('/api/mercadopago/create-pix', (req, res) => res.status(500).json({ success: false, message: 'MP SDK not loaded' }))
-  app.post('/api/mercadopago/process-order', (req, res) => res.status(500).json({ success: false, message: 'MP SDK not loaded' }))
-}
+app.use('/api', mercadopagoRoutes)
 
-// THEN static files
+// Static files
 const staticDir = path.join(__dirname, '..', 'dist')
 app.use('/assets', express.static(path.join(staticDir, 'assets'), { maxAge: '365d', immutable: true }))
 app.use('/characters', express.static(path.join(staticDir, 'characters'), { maxAge: '30d' }))
 app.use(express.static(staticDir, { maxAge: '1d', index: false }))
 
-// LAST: SPA fallback
+// SPA fallback — LAST
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ error: 'Not found' })
   res.setHeader('Cache-Control', 'no-cache')

@@ -308,6 +308,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* LEFT — Text + CTA + Stats */}
             <motion.div
+              className="flex flex-col items-center md:items-start"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
@@ -316,14 +317,14 @@ export default function Home() {
                 <Sparkles className="w-4 h-4" /> Vídeos Mágicos Personalizados
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4 text-left">
                 Torne qualquer momento do seu filho{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
                   mágico e inesquecível!
                 </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-md">
+              <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-md text-left">
                 Um vídeo personalizado com o personagem favorito dele, trazendo uma mensagem especial
                 cheia de carinho e alegria para qualquer ocasião!
               </p>
@@ -336,7 +337,7 @@ export default function Home() {
 
               {/* Stats card */}
               <motion.div
-                className="mt-8 grid grid-cols-2 gap-4 bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-primary-100 shadow-sm max-w-md"
+                className="mt-8 grid grid-cols-2 gap-4 bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-primary-100 shadow-sm w-full max-w-md"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}

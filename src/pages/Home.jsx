@@ -298,38 +298,71 @@ export default function Home() {
   return (
     <>
       {/* =============================== */}
-      {/* HERO — Vídeo + CTA              */}
+      {/* HERO — Vídeo + CTA centralizado */}
       {/* =============================== */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50">
-        <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-              <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-                <Sparkles className="w-4 h-4" /> Vídeos Mágicos Personalizados
+        <div className="max-w-lg mx-auto px-4 py-12 md:py-16">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+              <Sparkles className="w-4 h-4" /> Vídeos Mágicos Personalizados
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight text-left">
+              Torne qualquer momento do seu filho{' '}
+              <span className="bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
+                mágico e inesquecível!
+              </span>
+            </h1>
+
+            <p className="mt-5 text-lg text-gray-600 text-left">
+              Um vídeo personalizado com o personagem favorito dele, trazendo uma mensagem especial
+              cheia de carinho e alegria para qualquer ocasião!
+            </p>
+
+            <motion.div className="mt-8 flex justify-center" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link href="/purchase" className="btn-primary text-lg !py-4 !px-8 inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                Quero criar essa surpresa especial! <ChevronRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
+
+            {/* Stats card abaixo do botão — replicando Portal Polo Norte */}
+            <motion.div
+              className="mt-8 bg-white rounded-2xl shadow-md border border-gray-100 px-6 py-5 grid grid-cols-2 gap-4 max-w-md mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <div className="text-center border-r border-gray-100">
+                <p className="text-3xl md:text-4xl font-extrabold text-primary-600">+3.246</p>
+                <p className="text-xs text-gray-500 flex items-center justify-center gap-1 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+                  Crianças felizes
+                </p>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-                Torne qualquer momento do seu filho{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
-                  mágico e inesquecível!
-                </span>
-              </h1>
-              <p className="mt-5 text-lg text-gray-600">
-                Um vídeo personalizado com o personagem favorito dele, trazendo uma mensagem especial
-                cheia de carinho e alegria para qualquer ocasião!
-              </p>
-              <motion.div className="mt-7" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link href="/purchase" className="btn-primary text-lg !py-4 !px-8 inline-flex items-center justify-center gap-2">
-                  Quero criar essa surpresa! <ChevronRight className="w-5 h-5" />
-                </Link>
-              </motion.div>
-              <div className="mt-5 flex items-center gap-4 text-sm text-gray-500">
-                <span className="flex items-center gap-1"><Shield className="w-4 h-4 text-green-500" /> Pagamento seguro</span>
-                <span className="flex items-center gap-1"><Clock className="w-4 h-4 text-primary-500" /> Entrega em até 24h</span>
+              <div className="text-center">
+                <p className="text-3xl md:text-4xl font-extrabold text-accent-500">98%</p>
+                <p className="text-xs text-gray-500 mt-1">Taxa de satisfação</p>
               </div>
             </motion.div>
 
-            <motion.div className="relative flex justify-center" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
-              <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white max-w-[300px]">
+            <div className="mt-6 flex items-center gap-4 text-sm text-gray-500 justify-center">
+              <span className="flex items-center gap-1"><Shield className="w-4 h-4 text-green-500" /> Pagamento seguro</span>
+              <span className="flex items-center gap-1"><Clock className="w-4 h-4 text-primary-500" /> Entrega em até 24h</span>
+            </div>
+
+            {/* Vídeo de apresentação */}
+            <motion.div
+              className="mt-10 flex justify-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white max-w-[300px] w-full">
                 <AutoPlayVideo
                   src={PRESENTATION_VIDEO}
                   className="w-full object-cover"
@@ -337,22 +370,8 @@ export default function Home() {
                   pauseDelay={5000}
                 />
               </div>
-              <motion.div
-                className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg p-3 flex items-center gap-2 border"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30, delay: 0.8 }}
-              >
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-gray-900">+5.000</p>
-                  <p className="text-xs text-gray-500">Clientes felizes</p>
-                </div>
-              </motion.div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

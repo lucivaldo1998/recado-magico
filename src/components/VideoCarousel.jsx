@@ -1,9 +1,26 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
 
 function CarouselVideo({ src, label, sublabel, onPlay }) {
   const videoRef = useRef(null)
   const [playing, setPlaying] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
+  // Force first frame to load on iOS Safari
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    // iOS workaround: load + seek to 0.1s to render first frame as poster
+    const handleLoaded = () => {
+      try {
+        video.currentTime = 0.1
+        setLoaded(true)
+      } catch {}
+    }
+    video.addEventListener('loadedmetadata', handleLoaded)
+    video.load()
+    return () => video.removeEventListener('loadedmetadata', handleLoaded)
+  }, [src])
 
   const togglePlay = () => {
     const video = videoRef.current
@@ -21,9 +38,10 @@ function CarouselVideo({ src, label, sublabel, onPlay }) {
     <div className="relative cursor-pointer group rounded-2xl overflow-hidden bg-gray-900" onClick={togglePlay}>
       <video
         ref={videoRef}
-        src={src}
+        src={src + '#t=0.1'}
         playsInline
-        preload="metadata"
+        muted
+        preload="auto"
         className="w-full object-cover"
         style={{ aspectRatio: '16/9' }}
         onPause={() => setPlaying(false)}

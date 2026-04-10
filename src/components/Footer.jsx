@@ -78,9 +78,9 @@ export default function Footer() {
           <div className="col-span-1">
             <h3 className="font-semibold mb-4 text-lg text-gray-900">Informações Legais</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Termos de Uso</a></li>
-              <li><a href="#" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Política de Privacidade</a></li>
-              <li><a href="#" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Política de Reembolso</a></li>
+              <li><Link href="/terms" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Termos de Uso</Link></li>
+              <li><Link href="/privacy" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Política de Privacidade</Link></li>
+              <li><Link href="/refund" className="text-gray-500 hover:text-primary-600 transition-colors text-sm">Política de Reembolso</Link></li>
             </ul>
           </div>
 

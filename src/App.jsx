@@ -17,6 +17,9 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import Admin from './pages/admin/Admin'
 import FAQ from './pages/FAQ'
 import Contact from './pages/Contact'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
+import Refund from './pages/Refund'
 
 export default function App() {
   const setPackages = useStore((s) => s.setPackages)
@@ -43,6 +46,9 @@ export default function App() {
               <Route path="/order-confirmation" component={OrderConfirmation} />
               <Route path="/faq" component={FAQ} />
               <Route path="/contact" component={Contact} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/refund" component={Refund} />
               <Route>
                 <div className="text-center py-20">
                   <h1 className="text-2xl font-bold">Página não encontrada</h1>

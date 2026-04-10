@@ -493,7 +493,7 @@ export default function Purchase() {
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Lucivaldo Lopes"
+                placeholder="Ana Lopes"
                 className={`w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 outline-none ${errors.customerName ? 'border-red-400' : 'border-gray-200'}`}
               />
               {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName}</p>}
@@ -506,7 +506,7 @@ export default function Purchase() {
                 type="email"
                 value={customerEmail}
                 onChange={(e) => setCustomerEmail(e.target.value)}
-                placeholder="seuemail@gmail.com"
+                placeholder="Ana@gmail.com"
                 className={`w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 outline-none ${errors.customerEmail ? 'border-red-400' : 'border-gray-200'}`}
               />
               {errors.customerEmail && <p className="text-red-500 text-xs mt-1">{errors.customerEmail}</p>}
@@ -546,7 +546,7 @@ export default function Purchase() {
                   type="tel"
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="92999868534"
+                  placeholder="(11) 99999-9999"
                   className={`flex-1 border rounded-r-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 outline-none ${errors.whatsapp ? 'border-red-400' : 'border-gray-200'}`}
                 />
               </div>
@@ -561,7 +561,7 @@ export default function Purchase() {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
                 maxLength={700}
-                placeholder="Maria gosta de bolo de chocolate e está fazendo 5 aninhos. Ela adora brincar de princesa e seu personagem favorito é a Elsa. Fale pra ela que ela é muito especial!"
+                placeholder="A Maria gosta de unicórnios e vai fazer aniversário dia 10/05"
                 className={`w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none ${errors.notes ? 'border-red-400' : 'border-gray-200'}`}
               />
               {errors.notes && <p className="text-red-500 text-xs mt-1">{errors.notes}</p>}
@@ -671,32 +671,82 @@ export default function Purchase() {
 
           {/* Card payment */}
           {paymentTab === 'card' && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
-              {!mpReady ? (
-                <div className="text-center py-10 text-gray-500">
-                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                  Carregando formulário de pagamento...
-                </div>
-              ) : (
-                <div id="mp-card-container" />
-              )}
+            <div>
+              {/* Green info banner */}
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-4">
+                <h3 className="flex items-center gap-2 font-bold text-green-700 text-base mb-2">
+                  <Shield className="w-5 h-5" /> Pagamento Seguro
+                </h3>
+                <p className="text-sm text-green-700">
+                  Seus dados de cartão são criptografados e processados com segurança através do Mercado Pago.
+                </p>
+              </div>
+
+              {/* Card form container */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-5">
+                <h3 className="flex items-center gap-2 font-bold text-gray-900 text-lg mb-4">
+                  <CreditCard className="w-5 h-5 text-gray-700" />
+                  Pagamento com Cartão (Mercado Pago)
+                </h3>
+                {!mpReady ? (
+                  <>
+                    <div className="text-center py-8">
+                      <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-600 mb-3" />
+                      <p className="text-gray-500 text-sm">Carregando formulário...</p>
+                    </div>
+                    {/* Skeleton placeholders */}
+                    <div className="space-y-3 animate-pulse">
+                      <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-10 bg-gray-200 rounded-lg"></div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-10 bg-gray-200 rounded-lg"></div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-10 bg-gray-200 rounded-lg"></div>
+                        </div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-1/3 mt-4"></div>
+                      <div className="h-10 bg-gray-200 rounded-lg"></div>
+                    </div>
+                  </>
+                ) : (
+                  <div id="mp-card-container" />
+                )}
+              </div>
             </div>
           )}
 
           {/* PIX payment */}
           {paymentTab === 'pix' && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+            <div>
+              {/* Green info banner */}
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-4">
+                <h3 className="flex items-center gap-2 font-bold text-green-700 text-base mb-2">
+                  <QrCode className="w-5 h-5" /> Pagamento via PIX
+                </h3>
+                <p className="text-sm text-green-700">
+                  Complete seu pagamento usando PIX, a forma mais rápida e segura de pagamento.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-white p-5">
               {!pixData ? (
-                <div className="text-center py-8">
-                  <QrCode className="w-16 h-16 text-primary-300 mx-auto mb-4" />
-                  <p className="text-gray-700 mb-2">Complete seu pagamento usando PIX, a forma mais rápida e segura.</p>
-                  <p className="text-sm text-gray-500 mb-6">O código PIX será gerado e é válido por 30 minutos.</p>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-4">Como funciona:</h3>
+                  <ol className="space-y-3 text-sm text-gray-700 mb-6">
+                    <li className="flex gap-2"><span className="font-semibold">1.</span> Clique no botão 'Pagar com PIX' abaixo</li>
+                    <li className="flex gap-2"><span className="font-semibold">2.</span> Escaneie o QR code ou copie o código PIX</li>
+                    <li className="flex gap-2"><span className="font-semibold">3.</span> Confirme o pagamento no aplicativo do seu banco</li>
+                  </ol>
                   <button
                     onClick={handlePix}
                     disabled={pixLoading}
-                    className="btn-primary inline-flex items-center gap-2"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 px-6 rounded-xl inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                   >
-                    {pixLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Gerando PIX...</> : 'Gerar QR Code PIX'}
+                    {pixLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> Gerando PIX...</> : <><QrCode className="w-5 h-5" /> Pagar com PIX</>}
                   </button>
                 </div>
               ) : (
@@ -734,6 +784,7 @@ export default function Purchase() {
                   </div>
                 </div>
               )}
+              </div>
             </div>
           )}
 

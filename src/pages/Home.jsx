@@ -330,8 +330,9 @@ export default function Home() {
               </p>
 
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="inline-block">
-                <Link href="/purchase" className="btn-primary text-lg !py-4 !px-8 inline-flex items-center justify-center gap-2">
-                  Quero criar essa surpresa especial! <ChevronRight className="w-5 h-5" />
+                <Link href="/purchase" className="btn-primary text-lg !py-4 !px-8 inline-flex items-center justify-center gap-2 text-center">
+                  <span className="text-center">Quero criar essa surpresa especial!</span>
+                  <ChevronRight className="w-5 h-5 shrink-0" />
                 </Link>
               </motion.div>
 

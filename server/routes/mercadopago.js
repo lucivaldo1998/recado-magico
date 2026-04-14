@@ -96,13 +96,8 @@ router.get('/mercadopago/check-payment/:paymentId', async (req, res) => {
     })
     const result = await mpRes.json()
 
-    const status = result.status // pending, approved, rejected, etc.
+    const status = result.status
     const orderId = result.metadata?.order_id
-
-    // Auto-update order if approved
-    if (status === 'approved' && orderId) {
-      db.updateOrder(orderId, { status: 'paid' })
-    }
 
     res.json({ success: true, paymentStatus: status, orderId })
   } catch (err) {

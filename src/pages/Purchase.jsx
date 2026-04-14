@@ -214,6 +214,7 @@ export default function Purchase() {
                 })
                 const data = await res.json()
                 if (data.success && data.payment?.status === 'approved') {
+                  await api('PATCH', `/api/orders/${currentOrder.id}`, { status: 'paid', paymentMethod: 'credit_card' })
                   navigate('/order-confirmation')
                 } else {
                   setPaymentError('Pagamento não aprovado. Verifique os dados e tente novamente.')
@@ -263,6 +264,8 @@ export default function Purchase() {
         const data = await res.json()
         if (data.paymentStatus === 'approved') {
           clearInterval(interval)
+          // Update order status via PATCH (same route admin uses — guaranteed to work)
+          await api('PATCH', `/api/orders/${currentOrder.id}`, { status: 'paid', paymentMethod: 'pix' })
           setPixPaid(true)
         }
       } catch {}

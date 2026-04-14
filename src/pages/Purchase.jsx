@@ -241,6 +241,8 @@ export default function Purchase() {
       const data = await res.json()
       if (data.success) {
         setPixData(data.pixData)
+        // Save paymentId for polling
+        setCurrentOrder({ ...currentOrder, payment_id: data.paymentId })
       } else {
         setPaymentError(data.message || 'Erro ao gerar PIX')
       }
@@ -248,21 +250,26 @@ export default function Purchase() {
     finally { setPixLoading(false) }
   }
 
-  // Poll PIX payment status
+  // Poll PIX payment status via Mercado Pago API
+  const [pixPaid, setPixPaid] = useState(false)
+
   useEffect(() => {
-    if (!pixData || !currentOrder) return
+    if (!pixData || !currentOrder?.payment_id) return
+    if (pixPaid) return
+
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/orders/${currentOrder.id}`)
-        const order = await res.json()
-        if (order.status === 'paid' || order.status === 'completed') {
+        const res = await fetch(`/api/mercadopago/check-payment/${currentOrder.payment_id}`)
+        const data = await res.json()
+        if (data.paymentStatus === 'approved') {
           clearInterval(interval)
-          navigate('/order-confirmation')
+          setPixPaid(true)
         }
       } catch {}
-    }, 5000)
+    }, 4000)
+
     return () => clearInterval(interval)
-  }, [pixData])
+  }, [pixData, currentOrder, pixPaid])
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8">
@@ -779,9 +786,23 @@ export default function Purchase() {
                     <Clock className="w-4 h-4 inline mr-1" /> Este código PIX é válido por 30 minutos
                   </div>
 
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Aguardando pagamento... Confirme no app do seu banco
-                  </div>
+                  {pixPaid ? (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+                      <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                      <p className="font-bold text-green-700 text-lg">Pagamento Confirmado!</p>
+                      <p className="text-sm text-green-600 mt-1">Seu pedido foi recebido com sucesso.</p>
+                      <button
+                        onClick={() => navigate('/order-confirmation')}
+                        className="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl inline-flex items-center gap-2 transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4" /> Ver confirmação do pedido
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Aguardando pagamento... Confirme no app do seu banco
+                    </div>
+                  )}
                 </div>
               )}
               </div>

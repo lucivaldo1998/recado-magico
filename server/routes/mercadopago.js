@@ -80,10 +80,34 @@ router.post('/mercadopago/create-pix', async (req, res) => {
 
     db.updateOrder(orderId, { payment_method: 'pix', payment_id: String(result.id) })
 
-    res.json({ success: true, pixData })
+    res.json({ success: true, pixData, paymentId: String(result.id) })
   } catch (err) {
     console.error('MP PIX error:', err)
     res.status(500).json({ success: false, message: err.message || 'Erro ao gerar PIX' })
+  }
+})
+
+// Check payment status — called by frontend polling
+router.get('/mercadopago/check-payment/:paymentId', async (req, res) => {
+  try {
+    const { paymentId } = req.params
+    const mpRes = await fetch(`${MP_API}/payments/${paymentId}`, {
+      headers: { 'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+    })
+    const result = await mpRes.json()
+
+    const status = result.status // pending, approved, rejected, etc.
+    const orderId = result.metadata?.order_id
+
+    // Auto-update order if approved
+    if (status === 'approved' && orderId) {
+      db.updateOrder(orderId, { status: 'paid' })
+    }
+
+    res.json({ success: true, paymentStatus: status, orderId })
+  } catch (err) {
+    console.error('Check payment error:', err)
+    res.status(500).json({ success: false, message: 'Erro ao verificar pagamento' })
   }
 })
 

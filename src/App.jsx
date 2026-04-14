@@ -32,6 +32,7 @@ export default function App() {
 
   return (
     <Switch>
+      <Route path="/admin" component={Admin} />
       <Route path="/admin/:rest*" component={Admin} />
       <Route>
         <div className="flex flex-col min-h-screen">
